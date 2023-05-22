@@ -15,9 +15,16 @@ router.post("/Register", async (req, res, next) => {
       lastname: req.body.lastname,
       country: req.body.country,
       password: req.body.password,
-      email: req.body.email,
-      profilePic: req.body.profilePic
+      email: req.body.email
+      //profilePic: req.body.profilePic
     }
+
+    // parameters exists
+    if (!user_details.username || !user_details.firstname || !user_details.lastname || 
+      !user_details.country || !user_details.password || !user_details.email) {
+      throw {status: 400, message: "Wrong input parameters"};
+    }
+
     let users = [];
     users = await DButils.execQuery("SELECT username from users");
 
@@ -30,7 +37,7 @@ router.post("/Register", async (req, res, next) => {
       parseInt(process.env.bcrypt_saltRounds)
     );
     await DButils.execQuery(
-      `INSERT INTO users VALUES ('${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
+      `INSERT INTO users (username, first_name, last_name, country, password, email) VALUES ('${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
     res.status(201).send({ message: "user created", success: true });
@@ -70,7 +77,7 @@ router.post("/Login", async (req, res, next) => {
 
 router.post("/Logout", function (req, res) {
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
-  res.send({ success: true, message: "logout succeeded" });
+  res.status(200).send({ success: true, message: "logout succeeded" });
 });
 
 module.exports = router;

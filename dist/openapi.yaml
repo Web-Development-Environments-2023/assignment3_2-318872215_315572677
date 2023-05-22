@@ -1,22 +1,81 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Recipes api
-  description: API for recipes project
+  title: Grandma's recipes and others
+  description: |- 
+    API for recipes project
+    This is a Server of Grandma's recipes and others based on the OpenAPI 3.0 specification.
+    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+    
+    # Introduction
+    The currently supported resources are:
+
+    * Preview details view
+    * navigation bar
+    * About page
+    * Registration page Registration
+    * login login page
+    * Main recipe page
+    * Recipe presentation page
+    * Recipe search page
+    * Modal recipe creation
+    * My favorites page
+    * My recipes page
+    * My family recipes page
+    * Bonus - recipe preparation page
+    * Bonus - meal planning page
+
+    
+    This API will support the following HTTP actions on each resource:
+
+    * GET - Retrieve a single resource or all resources in a collection.
+    * POST - Create a new resource or collection of resources.
+
+    In addition, this API will support Action resources that can be used to perform operations outside the standard CRUD operations.
+    
+    This API will be used to support common data connectors, such as Azure Data Connectors and Prismatic Data Connectors.
+    
+
+    Some Assignment links:
+    - [First Assignment - Shay](https://web-development-environments-2023.github.io/315572677/)
+    - [First Assignment - Oran](https://web-development-environments-2023.github.io/318872215/)
+    - [Our Second Assignment - StarShip Game](https://web-development-environments-2023.github.io/assignment2-315572677_318872215/#)
+    
   version: 1.0.1
 servers:
-# local:
-- url: "http://127.0.0.1:3000"
-# remote:
-# - url: "http://132.72.65.211"
-  description: SwaggerHub API Auto Mocking hey
+  - description: local
+    url: "http://127.0.0.1:3000"
+  - description: remote
+    url: "https://oran-shay.cs.bgu.ac.il/"
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ORANB000/RecipesWebAPI/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SHAYZG10/RecipesWebAPI/1.0.0
+
+contact:
+    email: shaygila@post.bgu.ac.il
+    url: "https://oran-shay.cs.bgu.ac.il/"
+license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+externalDocs:
+  description: Find out more in Github
+  url: http://swagger.io # change the link to gitgub
+
+
+
 tags:
 - name: Auth
   description: All authentication related routes
 - name: Users
-  description: All the user's personal app info
+  description: All the user's personal app info (get & create)
 - name: Recipes
-  description: All reciepes general info
+  description: All reciepes general info (get & create)
+
+
+
 paths:
+#~~~~~~~~~~~~~ Auth ~~~~~~~~~~~~~#
+  # Register 
   /register:
     post:
       tags:
@@ -33,8 +92,15 @@ paths:
       responses:
         "201":
           description: A new user has been added
+          $ref: '#/components/responses/Created'
         "400":
           description: wrong input parameters
+          $ref: '#/components/responses/BadRequest'
+        "409":
+          description: User already exists
+          $ref: '#/components/responses/Conflict'
+
+  # Login
   /login:
     post:
       tags:
@@ -51,6 +117,7 @@ paths:
         "200":
           description: |
             User was found in the DB and authenitcated successfully. The session ID is returned in a cookie named `session`.  You should include this cookie in subsequent requests
+          $ref: '#/components/responses/OK'
           headers:
             Set-Cookie:
               style: simple
@@ -60,6 +127,9 @@ paths:
                 example: session=87s97sdhgf279293f8w0e9
         "401":
           description: Authentication failed
+          $ref: '#/components/responses/Unauthorized'
+
+  # Logout
   /logout:
     post:
       tags:
@@ -68,6 +138,13 @@ paths:
       responses:
         "200":
           description: "the user has ben successfully logged out"
+          $ref: '#/components/responses/OK'
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# End of Auth routes
+
+
+#~~~~~~~~~~~~~ users ~~~~~~~~~~~~~# 
+  # /users/favorites
   /users/favorites:
     get:
       tags:
@@ -87,6 +164,7 @@ paths:
           description: user is not authorized
       security:
       - cookieAuth: []
+
     post:
       tags:
       - Users
@@ -105,16 +183,30 @@ paths:
       responses:
         "200":
           description: The Recipe successfully saved as favorite
+          $ref: '#/components/responses/OK'
         "401":
           description: user is not authorized
+          $ref: '#/components/responses/Unauthorized'
       security:
       - cookieAuth: []
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# End of users routes
+
+
+
+#~~~~~~~~~~~~~ recipes ~~~~~~~~~~~~~# 
+  # recipes/{recipeId}
   /recipes/{recipeId}:
     get:
       tags:
       - Recipes
       summary: Return preview details on recipe by his ID
       description: Return preview details on recipe by his ID
+      security:
+        - ApiKeyAuth: [] 
       parameters:
       - name: recipeId
         in: path
@@ -133,29 +225,142 @@ paths:
                 $ref: '#/components/schemas/RecipePreview'
         "404":
           description: recipeId is not exists
+          $ref: '#/components/responses/NotFound'
+
+  recipes/random
+  /recipes/random:
+    get:
+      tags:
+        - Recipes
+      summary: Return 3 random recipes
+      description: Return 3 random recipes
+      responses:
+        '200':
+          description: data results matching about the 3 recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# End of recipes routes
+
+
 components:
+  #~~~~~~~~~~~~~ responses ~~~~~~~~~~~~~# 
+  responses:
+    OK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Created:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Accepted:
+      description: Accepted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NoContent:
+      description: No Content
+
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Authorization information is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Conflict:
+      description: The specified resource was conflict with other resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  #~~~~~~~~~~~~~ schemas ~~~~~~~~~~~~~# 
   schemas:
+
+    # ApiKeyAuth
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: cookie       # can be "header", "query" or "cookie"
+      name: session  # name of the header, query parameter or cookie
+
+    # Error
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: "message depend on status code"
+      required:
+        - status
+        - message
+
+    # Register
     User:
       type: object
       properties:
+
         username:
           maxLength: 8
           minLength: 3
           type: string
           description: username conatins between 3 to 8 letters only
+          pattern: "^[a-zA-Z]+$"
           example: my_name
+
         firstname:
           type: string
           description: user's first name
           example: my_first_name
+
         lastname:
           type: string
           description: user's last name
           example: my_last_name
+
         country:
           type: string
           description: user's country
           example: Israel
+
         password:
           maxLength: 10
           minLength: 5
@@ -164,20 +369,32 @@ components:
             is a number and a special char
           format: password
           example: my_name@12
+
+        confirmPass:
+          type: string
+          format: password
+          description: write the same password
+          example: 'my_name@12'
+
         email:
           pattern: email
           type: string
           description: user's email
           example: my_name12@gmail.com
+          pattern: >
+            "^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$"
         # image-url:
         #   pattern: URL
         #   type: string
         #   description: URL for the user's image
         #   example: https://cloudinary.com/
       description: Model containing user info
+
+    # Login
     LoginScheme:
       type: object
       properties:
+
         username:
           maxLength: 8
           minLength: 3
@@ -191,38 +408,49 @@ components:
       example:
         username: my_name
         password: my_name@12
+
+
+    # RecipePreview
     RecipePreview:
       type: object
       properties:
+
         id:
           type: integer
           description: recipe identifier
           example: 102
+
         title:
           type: string
           description: recipe name
           example: Simple Macaroni and Cheese
+
         image:
           type: string
           description: recipe image
           format: URL
           example: https://spoonacular.com/recipeimages/655455-566x370.jpg
+
         readyInMinutes:
           type: integer
           description: the time takes to make this recipe
           example: 45
+
         popularity:
           type: integer
           description: how many likes got this recipe
           example: 5987
+
         vegetarian:
           type: boolean
           description: indication if the recipe is vegetarian
           example: false
+
         vegan:
           type: boolean
           description: indication if the recipe is vegan
           example: false
+
         glutenFree:
           type: boolean
           description: indication if the recipe is gluten free
