@@ -1,12 +1,14 @@
 var express = require("express");
 var router = express.Router();
 const recipes_utils = require("./utils/recipes_utils");
+const user_utils = require("./utils/user_utils");
 
 router.get("/", (req, res) => res.send("im here"));
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+/**
+ * This path returns a 3 random recipes with full details
+ */
 router.get("/random", async (req, res, next) => {
   try {
     const random3_recipes = await recipes_utils.getRandomThreeRecipes();
@@ -14,21 +16,114 @@ router.get("/random", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-})
+});
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+router.post("/search", async (req, res, next) => {
+  try {
+    const { searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance } = req.body;
+    const recipes = await recipes_utils.searchRecipes(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance);
+    res.send(recipes);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+/**
+ * This path create new recipe with full details
+ */
+router.post("/create", async (req, res, next) => {
+  try {
+    const user_id = req.session.user_id;
+    if (!user_id) {
+      throw { status: 401, message: "Must login before" };
+    }
+
+    const { title, readyInMinutes, vegetarian, vegan, glutenFree, image, servings, instructions, ingredients} = req.body;
+
+    if (!title || !readyInMinutes || vegetarian === undefined || vegan === undefined || glutenFree === undefined ||
+         !image || !servings || !instructions || !ingredients) {
+      throw { status: 400, message: "Invalid recipe data" };
+    }
+
+    let recipe = {
+      title: title,
+      readyInMinutes: readyInMinutes,
+      vegetarian: vegetarian ? 1 : 0,
+      vegan: vegan ? 1 : 0,
+      glutenFree: glutenFree ? 1 : 0,
+      image: image,
+      // creatorBy,
+      // usualTime,
+      servings: servings,
+      instructions: instructions,
+      ingredients: ingredients
+    };
+
+    await recipes_utils.addRecipe(user_id, recipe);
+
+    res.status(201).send(recipe);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * This path add family recipe to DB
+ */
+router.post('/familyRecipes', async (req,res,next) => {
+  try {
+    const user_id = req.session.user_id;
+    if (!user_id) {
+      throw { status: 401, message: "Must login before" };
+    }
+
+    const { title, readyInMinutes, vegetarian, vegan, glutenFree, image, creatorBy, usualTime, servings, instructions, ingredients } = req.body;
+
+    if (!title || !readyInMinutes || vegetarian === undefined || vegan === undefined || glutenFree === undefined ||
+         !image || !creatorBy || !usualTime || !servings || !instructions || !ingredients) {
+      throw { status: 400, message: "Invalid recipe data" };
+    }
+
+    let recipe = {
+      title: title,
+      readyInMinutes: readyInMinutes,
+      vegetarian: vegetarian ? 1 : 0,
+      vegan: vegan ? 1 : 0,
+      glutenFree: glutenFree ? 1 : 0,
+      image: image,
+      creatorBy: creatorBy,
+      usualTime: usualTime,
+      servings: servings,
+      instructions: instructions,
+      ingredients: ingredients
+    };
+
+    await recipes_utils.addRecipe(user_id, recipe);
+
+    res.status(201).send(recipe);
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 /**
  * This path returns a full details of a recipe by its id
  */
 router.get("/:recipeId", async (req, res, next) => {
   try {
+    const user_id = req.session.user_id;
     const recipe = await recipes_utils.getRecipeDetails(req.params.recipeId);
+    if (user_id) await user_utils.markAsViewed(user_id, req.params.recipeId);
     res.send(recipe);
   } catch (error) {
     next(error);
   }
 });
+
 
 
 

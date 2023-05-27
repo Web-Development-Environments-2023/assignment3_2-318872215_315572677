@@ -176,19 +176,64 @@ paths:
             schema:
               type: object
               properties:
-                reciepeId:
+                recipeId:
                   type: string
                   description: reciepe's id which the user saved
                   example: 716429
       responses:
-        "200":
+        "201":
           description: The Recipe successfully saved as favorite
-          $ref: '#/components/responses/OK'
+          $ref: '#/components/responses/Created'
         "401":
           description: user is not authorized
           $ref: '#/components/responses/Unauthorized'
       security:
       - cookieAuth: []
+
+  # /users/favorites
+  /users/lastWatched:
+    get:
+      tags:
+        - Users
+      summary: Get 3 last watched recipes by login user
+      description: Return 3 last watched recipes by login user
+      responses:
+        '200':
+          description: Successfully returned 3 last watched recipes
+        '400':
+          description: 'invalid input, object invalid'
+
+  # /users/myRecipes
+  /users/myRecipes:
+    get:
+      tags:
+        - Users
+      summary: Get all recipes user created
+      description: Will include the list of all recipes created by the user.
+      responses:
+        '200':
+          description: Successfully returned all recipes
+        '401':
+          description: 'user is not authorized'
+        '404':
+          description: 'user not found'
+      security:
+        - cookieAuth: []
+
+  # /users/FamilyRecipes
+  /users/familyRecipes:
+    get:
+      tags:
+        - Users
+      summary: Family recipes page view
+      description: Will show your family recipes.
+      responses:
+        '200':
+          description: LaFamilia page loaded successfully.
+        '401':
+          description: 'user is not authorized'
+        '404':
+          description: LaFamilia page not found.  
 
 
 
@@ -227,7 +272,7 @@ paths:
           description: recipeId is not exists
           $ref: '#/components/responses/NotFound'
 
-  recipes/random
+  #recipes/random
   /recipes/random:
     get:
       tags:
@@ -237,12 +282,68 @@ paths:
       responses:
         '200':
           description: data results matching about the 3 recipes
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Recipe'
+        '400':
+          description: 'invalid input, object invalid'
+
+  # /recipes/search
+  /recipes/search:
+    post:
+      tags:
+        - Recipes
+      summary: Search for recipes from spoonacular
+      description: Return the number (5\10\15) recipes, 5 by defualt
+      responses:
+        '200':
+          description: Return search results
+        '400':
+          description: invalid input, object invalid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Search'
+        
+  # /recipes/create
+  /recipes/create:
+    post:
+      tags:
+        - Recipes
+      summary: Create new recipe item
+      description: Add an new item (recipe) to the DB by the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecipe'
+      security:
+        - ApiKeyAuth: [] 
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # /recipes/FamilyRecipes
+  /recipes/familyRecipes:
+    post:
+      tags:
+        - Recipes
+      summary: Create family recipe.
+      description: Create family recipe by the user
+      responses:
+        '201':
+          description: New recipe created.
+        '401':
+          description: 'user is not authorized'
+        '400':
+          description: 'invalid input'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFamilyRecipe'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # End of recipes routes
@@ -370,19 +471,19 @@ components:
           format: password
           example: my_name@12
 
-        confirmPass:
-          type: string
-          format: password
-          description: write the same password
-          example: 'my_name@12'
+        # confirmPass:
+        #   type: string
+        #   format: password
+        #   description: write the same password
+        #   example: 'my_name@12'
 
         email:
           pattern: email
           type: string
           description: user's email
           example: my_name12@gmail.com
-          pattern: >
-            "^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$"
+          # "^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$"
+            
         # image-url:
         #   pattern: URL
         #   type: string
@@ -408,7 +509,6 @@ components:
       example:
         username: my_name
         password: my_name@12
-
 
     # RecipePreview
     RecipePreview:
@@ -456,3 +556,229 @@ components:
           description: indication if the recipe is gluten free
           example: false
   
+    # Search
+    Search:
+      type: object
+      required:
+      properties:
+
+        searchQuery:
+          type: string
+          example: 'Pasta with Garlic'
+
+        searchNumber:
+          type: integer
+          example: 5 #5/10/15
+
+        searchCuisine:
+          type: string
+          example: 'Italian'
+
+        searchDiet:
+          type: string
+          example: "Vegetarian"
+
+        searchIntolerance:
+          type: string
+          example: "Seafood"
+
+  # CreateFamilyRecipe
+    CreateFamilyRecipe:
+      type: object
+      properties:
+
+        title:
+          type: string
+          description: only letters, dish description .
+          example: chicken with potatos
+
+        readyInMinutes:
+          type: integer
+          description: preparation time in minutes.
+          example: 45
+
+        vegetarian:
+          type: boolean
+          description: Indicates if the dish is vegetarian
+          example: false
+
+        vegan:
+          type: boolean
+          description: Indicates if the dish is vegan
+          example: false
+
+        glutenFree:
+          type: boolean
+          description: Indicates if the dish is gluten free
+          example: false
+
+        image:
+          type: string
+          description: path to png/jpg 
+          example: chicken.png
+
+        servings:
+          type: integer
+          description: how many dishes can be prepared from this recipe
+          example: 4
+
+        instructions:
+          type: string
+          description: instructions to prepare to dish
+          example: put in oven and wait 30 minutes
+
+        ingredients:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Ingredients'
+          description: list of ingredients and quantites
+          #example: sugar - 50 gr, salt - 100 gr, 5 potatos
+
+        creatorBy:
+          type: string
+          description: username of the creator
+          example: johndoe
+
+        usualTime: 
+          type: string
+          description: usual time to prepare
+          example: Passover
+
+    # CreateRecipe
+    CreateRecipe:
+      type: object
+      properties:
+
+        title:
+          type: string
+          description: only letters, dish description .
+          example: chicken with potatos
+
+        readyInMinutes:
+          type: integer
+          description: preparation time in minutes.
+          example: 45
+
+        vegetarian:
+          type: boolean
+          description: Indicates if the dish is vegetarian
+          example: false
+
+        vegan:
+          type: boolean
+          description: Indicates if the dish is vegan
+          example: false
+
+        glutenFree:
+          type: boolean
+          description: Indicates if the dish is gluten free
+          example: false
+
+        image:
+          type: string
+          description: path to png/jpg 
+          example: chicken.png
+
+        servings:
+          type: integer
+          description: how many dishes can be prepared from this recipe
+          example: 4
+
+        instructions:
+          type: array
+          description: instructions of the dish
+          example: "put in oven and wait 30 minutes"
+
+        ingredients:
+          type: array
+          description: ingredients of the dish
+          items:
+            $ref: '#/components/schemas/Ingredients'
+
+
+    #     analyzedInstructions:
+    #       type: array
+    #       items: 
+    #         $ref: '#/components/schemas/AnalyzedInstructions'
+    #       description: list of steps and quantites and more information
+
+
+
+    # #AnalyzedInstructions
+    # AnalyzedInstructions:
+    #   type: object
+    #   properties:
+
+    #     steps:
+    #       type: array
+    #       items: 
+    #         $ref: '#/components/schemas/Step'
+    #       description: list of steps and quantites and more information
+          
+    # #Step
+    # Step:
+    #   type: object
+    #   properties:
+
+    #     equipment:
+    #       type: array
+    #       items: 
+    #         $ref: '#/components/schemas/Equipment'
+    #       description: list of steps and quantites and more information
+
+    #     ingredients:
+    #       type: array
+    #       items: 
+    #         $ref: '#/components/schemas/Ingredients'
+    #       description: list of steps and quantites and more information
+
+    #     number:
+    #       type: integer
+    #       description: step number
+    #       example: 2
+
+    #     step:
+    #       type: string
+    #       description: step
+    #       example: "Preheat the oven to 200 degrees F."
+
+    # #Equipment
+    # Equipment:
+      # type: object
+      # properties:
+
+      #   id:
+      #     type: integer
+      #     description: equipment id
+      #     example: 2
+
+      #   image:
+      #     type: image
+      #     description: URL of image
+      #     example: oven.jpg
+      
+      #   name:
+      #     type: string
+      #     description: name of Equipment
+      #     example: oven
+
+
+    # Ingredients
+    Ingredients:
+      type: object
+      properties:
+
+        id:
+          type: integer
+          description: ingredients id
+          example: 19334
+
+        image:
+          type: image
+          description: URL of image
+          example: light-brown-sugar.jpg
+      
+        name:
+          type: string
+          description: name of ingredients
+          example: light brown sugar

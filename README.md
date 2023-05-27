@@ -3,3 +3,44 @@
 
 
 # Hello to our 3.2 assignment :)
+
+
+## 🚀 About Us
+Name: Shay Giladi
+ID: 315572677
+- [@Shay Giladi](https://github.com/trickdeath0)
+
+Name: Oran Becker
+ID: 318872215
+- [@Oran Becker](https://github.com/OranBe)
+
+
+
+## Installation
+
+Install our project with npm
+
+```bash
+  npm install <projectName>
+  npm start
+```
+
+
+## Features
+
+This is a Backend of Grandma's recipes and others based on the OpenAPI 3.0 specification.
+  
+  ### Introduction
+    The currently supported resources are:
+
+    * Preview details view
+    * Registration page Registration
+    * login login page
+    * Main recipe page
+    * Recipe search page
+    * Modal recipe creation
+    * My favorites page
+    * My recipes page
+    * My family recipes page
+    * Bonus - recipe preparation page (Maybe???)
+    * Bonus - meal planning page (Maybe???)

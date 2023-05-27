@@ -26,7 +26,7 @@ router.post("/Register", async (req, res, next) => {
     }
 
     let users = [];
-    users = await DButils.execQuery("SELECT username from users");
+    users = await DButils.execQuery("SELECT username FROM users");
 
     if (users.find((x) => x.username === user_details.username))
       throw { status: 409, message: "Username taken" };
@@ -34,7 +34,7 @@ router.post("/Register", async (req, res, next) => {
     // add the new username
     let hash_password = bcrypt.hashSync(
       user_details.password,
-      parseInt(process.env.bcrypt_saltRounds)
+      parseInt(process.env.bcrypt_saltRounds || 11)
     );
     await DButils.execQuery(
       `INSERT INTO users (username, first_name, last_name, country, password, email) VALUES ('${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
