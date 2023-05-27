@@ -29,6 +29,8 @@ Install our project with npm
 ## Features
 
 This is a Backend of Grandma's recipes and others based on the OpenAPI 3.0 specification.
+
+https://app.swaggerhub.com/apis-docs/ORANB000/RecipesWebAPI/1.0.0
   
   ### Introduction
     The currently supported resources are:
