@@ -108,6 +108,23 @@ router.get('/familyRecipes', async (req,res,next) => {
 });
 
 
+/**
+ * This path gets body with recipeId and save the amount likes for recipe by logged-in user
+ */
+router.post('/Like', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    if (!user_id) throw {status: 401, message: "Must login to make this save"};
+    const recipe_id = req.body.recipeId;
+    const recipe = await recipe_utils.getRecipeDetails(recipe_id);
+    if (!recipe) throw {status: 400, message: "Recipe not found"};
+    // console.log(recipe.popularity);
+    await user_utils.markAsLike(recipe);
+    res.status(201).send("The Recipe successfully got like :) ");
+    } catch(error){
+    next(error);
+  }
+})
 
 
 

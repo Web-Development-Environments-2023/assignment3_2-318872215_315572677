@@ -68,3 +68,32 @@ CREATE TABLE `mydb`.`family_recipe` (
     REFERENCES `mydb`.`recipes` (`recipes_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+
+CREATE TABLE `mydb`.`LikeRecipes` (
+  `recipe_id` INT NOT NULL,
+  `popularity` INT NOT NULL,
+  PRIMARY KEY (`recipe_id`)
+);
+
+
+
+
+# Bouns...
+CREATE TABLE `mydb`.`analyzedInstructions` (
+  `recipes_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `title` VARCHAR(150) NOT NULL,
+  `ready_in_minutes` INT NOT NULL,
+  `vegetarian` TINYINT NOT NULL,
+  `vegan` TINYINT NOT NULL,
+  `gluten_free` TINYINT NOT NULL,
+  `servings` INT NOT NULL,
+  `steps` TEXT NOT NULL,
+  `image` TEXT NULL,
+  PRIMARY KEY (`recipes_id`),
+  CONSTRAINT `recipes_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `mydb`.`users` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);

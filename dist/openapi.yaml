@@ -235,6 +235,25 @@ paths:
         '404':
           description: LaFamilia page not found.  
 
+  # /users/Likes
+  /users/Like:
+    post:
+      tags:
+        - Users
+      summary: Add like to recipe
+      description: Add like for recipeID
+      responses:
+        '201':
+          description: successful operation (add like to recipe in the DB).
+        '400':
+          description: Invalid ID of recipe supplied
+        '401':
+          description: User is not authorized
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Like' 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -344,6 +363,28 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFamilyRecipe'
+
+  #~~~~~~~ BONUS ~~~~~~~~#
+  # /recipes/prepareRecipe
+  /recipes/prepareRecipe:
+    post:
+      tags:
+        - Recipes
+      summary: Analyies the recipe.
+      description: get the analyzed instruction from a recipe
+      responses:
+        '201':
+          description: Analyies recipe successfully created.
+        '401':
+          description: 'user is not authorized'
+        '400':
+          description: 'invalid input'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzedRecipe'
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # End of recipes routes
@@ -782,3 +823,30 @@ components:
           type: string
           description: name of ingredients
           example: light brown sugar
+
+
+    # Like
+    Like:
+      type: object
+      required:
+        - recipeId
+      properties:
+
+        recipeId:
+          type: integer
+          description: amount of likes
+          example: 55
+
+
+
+    # AnalyzedRecipe
+    AnalyzedRecipe:
+      type: object
+      required:
+        - recipeId 
+      properties:
+
+        recipeId:
+          type: integer
+          description: recipe identifier
+          example: 102

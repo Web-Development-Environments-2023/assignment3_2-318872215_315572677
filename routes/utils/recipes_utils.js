@@ -127,15 +127,25 @@ async function addRecipe(user_id, recipe) {
     try {
         instructionsToJSON = JSON.stringify(recipe.instructions);
         ingredientsToJSON = JSON.stringify(recipe.ingredients);
-        await DButils.execQuery(`INSERT INTO recipes (user_id, title, ready_in_minutes, vegetarian, vegan, gluten_free, servings, image, instructions, ingredients) VALUES
-                (${user_id}, '${recipe.title}', ${recipe.readyInMinutes}, ${recipe.vegetarian},${recipe.vegan}, ${recipe.glutenFree},
-                 ${recipe.servings}, '${recipe.image}', '${instructionsToJSON}', '${ingredientsToJSON}')`);
+        // await DButils.execQuery(`INSERT INTO recipes (user_id, title, ready_in_minutes, vegetarian, vegan, gluten_free, servings, image, instructions, ingredients) VALUES
+        //         (${user_id}, '${recipe.title}', ${recipe.readyInMinutes}, ${recipe.vegetarian},${recipe.vegan}, ${recipe.glutenFree},
+        //          ${recipe.servings}, '${recipe.image}', '${instructionsToJSON}', '${ingredientsToJSON}')`);
+
+        await DButils.execQuery(`INSERT INTO recipes (user_id, title, ready_in_minutes, vegetarian, vegan, gluten_free,
+                                 servings, image, instructions, ingredients) VALUES
+                                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                                [user_id, recipe.title, recipe.readyInMinutes, recipe.vegetarian, recipe.vegan, recipe.glutenFree,
+                                     recipe.servings, recipe.image, instructionsToJSON, ingredientsToJSON]);
+
 
         if (recipe.creatorBy && recipe.usualTime) {
             const [result] = await DButils.execQuery(`SELECT MAX(recipes_id) AS max_id FROM recipes`);
             const family_recipes_id = result.max_id || 0;
-            await DButils.execQuery(`INSERT INTO family_recipe (recipes_id, creatorBy, usualTime) VALUES 
-                (${family_recipes_id}, '${recipe.creatorBy}', '${recipe.usualTime}')`);
+            // await DButils.execQuery(`INSERT INTO family_recipe (recipes_id, creatorBy, usualTime) VALUES 
+            //     (${family_recipes_id}, '${recipe.creatorBy}', '${recipe.usualTime}')`);
+            await DButils.execQuery(`INSERT INTO family_recipe (recipes_id, creatorBy, usualTime) VALUES
+                                    (?, ?, ?)`,
+                                    [family_recipes_id, recipe.creatorBy, recipe.usualTime]);
         }
                   
 
@@ -146,6 +156,41 @@ async function addRecipe(user_id, recipe) {
 }
 
 
+async function analyzedInstructions(recipe_id) {
+    return await axios.get(`${api_domain}/${recipe_id}/analyzedInstructions`, {
+        params: {
+            stepBreakdown: true,
+            apiKey: process.env.spooncular_apiKey
+        }
+    });
+}
+
+async function getAnalyzedInstructions(recipe_id){
+    let instructions = await analyzedInstructions(recipe_id);
+    let { id, name, steps } = instructions.data[0];
+    return {
+        id: id,
+        name: name,
+        steps: steps
+    }
+}
+
+async function getExtendedIngredients(analyzedInstructions){
+    console.log(analyzedInstructions)
+    const dictionary = {
+        id: analyzedInstructions.id,
+        name: analyzedInstructions.name,
+        steps: analyzedInstructions.steps.map(step => ({
+          number: step.number,
+          step: step.step,
+          ingredients: step.ingredients,
+          equipment: step.equipment
+        }))
+      };
+
+      return dictionary.number;
+
+}
 
 
 exports.getRecipeDetails = getRecipeDetails;
@@ -153,5 +198,6 @@ exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.getRecipesPreview = getRecipesPreview;
 exports.searchRecipes = searchRecipes;
 exports.addRecipe = addRecipe;
-
-
+exports.analyzedInstructions = analyzedInstructions;
+exports.getAnalyzedInstructions = getAnalyzedInstructions;
+exports.getExtendedIngredients = getExtendedIngredients;

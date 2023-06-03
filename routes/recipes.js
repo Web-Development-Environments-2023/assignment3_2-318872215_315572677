@@ -22,6 +22,12 @@ router.get("/random", async (req, res, next) => {
 router.post("/search", async (req, res, next) => {
   try {
     const { searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance } = req.body;
+
+    // const defaultNumber = searchNumber || 5;
+    // const defaultCuisine = searchCuisine || "Italian";
+    // const defaultDiet = searchDiet || "Vegetarian";
+    // const defaultIntolerance = searchIntolerance || "Gluten";
+
     const recipes = await recipes_utils.searchRecipes(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance);
     res.send(recipes);
   } catch (error) {
@@ -104,6 +110,34 @@ router.post('/familyRecipes', async (req,res,next) => {
     await recipes_utils.addRecipe(user_id, recipe);
 
     res.status(201).send(recipe);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+/**
+ * This path, the user will be shown the preparation steps of the recipe, and the ingredients needed for each recipe
+ * Bonus function
+ */
+router.post("/prepareRecipe", async (req, res, next) => {
+  try {
+    const user_id = req.session.user_id;
+    if (!user_id) {
+      throw { status: 401, message: "Must login before" };
+    }
+
+    let recipe_id  = (req.body.recipeId)
+
+    if (!recipe_id ) {
+      throw { status: 400, message: "Invalid recipe data" };
+    }
+
+    let analyzedInstructions = await recipes_utils.getAnalyzedInstructions(recipe_id);
+    console.log(analyzedInstructions);
+    //let extendedData = await recipes_utils.getExtendedIngredients(analyzedInstructions);
+
+    res.status(201).send(analyzedInstructions);
   } catch (error) {
     next(error);
   }
