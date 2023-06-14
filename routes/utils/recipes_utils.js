@@ -106,7 +106,7 @@ async function getRecipesPreview(recipes_ids_list){
 
 
 
-async function searchRecipes(searchQuery, numberSearch, cuisineSearch, dietSearch, intoleranceSearch){
+async function searchRecipes(searchQuery, numberSearch = 5, cuisineSearch, dietSearch, intoleranceSearch){
     const response = await axios.get(`${api_domain}/complexSearch`,{
         params: {
             query: searchQuery,
@@ -123,7 +123,7 @@ async function searchRecipes(searchQuery, numberSearch, cuisineSearch, dietSearc
 }
 
 
-async function addRecipe(user_id, recipe) {
+async function addRecipe(username, recipe) {
     try {
         instructionsToJSON = JSON.stringify(recipe.instructions);
         ingredientsToJSON = JSON.stringify(recipe.ingredients);
@@ -131,10 +131,10 @@ async function addRecipe(user_id, recipe) {
         //         (${user_id}, '${recipe.title}', ${recipe.readyInMinutes}, ${recipe.vegetarian},${recipe.vegan}, ${recipe.glutenFree},
         //          ${recipe.servings}, '${recipe.image}', '${instructionsToJSON}', '${ingredientsToJSON}')`);
 
-        await DButils.execQuery(`INSERT INTO recipes (user_id, title, ready_in_minutes, vegetarian, vegan, gluten_free,
+        await DButils.execQuery(`INSERT INTO recipes (username, title, ready_in_minutes, vegetarian, vegan, gluten_free,
                                  servings, image, instructions, ingredients) VALUES
                                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                                [user_id, recipe.title, recipe.readyInMinutes, recipe.vegetarian, recipe.vegan, recipe.glutenFree,
+                                [username, recipe.title, recipe.readyInMinutes, recipe.vegetarian, recipe.vegan, recipe.glutenFree,
                                      recipe.servings, recipe.image, instructionsToJSON, ingredientsToJSON]);
 
 

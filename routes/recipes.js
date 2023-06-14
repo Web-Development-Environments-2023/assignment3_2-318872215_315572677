@@ -42,7 +42,7 @@ router.post("/search", async (req, res, next) => {
  */
 router.post("/create", async (req, res, next) => {
   try {
-    const user_id = req.session.user_id;
+    const user_id = req.session.username;
     if (!user_id) {
       throw { status: 401, message: "Must login before" };
     }
@@ -81,7 +81,7 @@ router.post("/create", async (req, res, next) => {
  */
 router.post('/familyRecipes', async (req,res,next) => {
   try {
-    const user_id = req.session.user_id;
+    const user_id = req.session.username;
     if (!user_id) {
       throw { status: 401, message: "Must login before" };
     }
@@ -122,7 +122,7 @@ router.post('/familyRecipes', async (req,res,next) => {
  */
 router.post("/prepareRecipe", async (req, res, next) => {
   try {
-    const user_id = req.session.user_id;
+    const user_id = req.session.username;
     if (!user_id) {
       throw { status: 401, message: "Must login before" };
     }
@@ -149,7 +149,7 @@ router.post("/prepareRecipe", async (req, res, next) => {
  */
 router.get("/:recipeId", async (req, res, next) => {
   try {
-    const user_id = req.session.user_id;
+    const user_id = req.session.username;
     const recipe = await recipes_utils.getRecipeDetails(req.params.recipeId);
     if (user_id) await user_utils.markAsViewed(user_id, req.params.recipeId);
     res.send(recipe);

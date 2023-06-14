@@ -1,52 +1,52 @@
 const DButils = require("./DButils");
 
-async function markAsFavorite(user_id, recipe_id){
+async function markAsFavorite(username, recipe_id){
     // await DButils.execQuery(`REPLACE INTO FavoriteRecipes (user_id, recipe_id) VALUES ('${user_id}',${recipe_id})`);
-    await DButils.execQuery("REPLACE INTO FavoriteRecipes (user_id, recipe_id) VALUES (?, ?)", [user_id, recipe_id]); // prepared statement (better against SQL injections)
+    await DButils.execQuery("REPLACE INTO FavoriteRecipes (username, recipe_id) VALUES (?, ?)", [username, recipe_id]); // prepared statement (better against SQL injections)
 }
 
 
-async function getFavoriteRecipes(user_id){
+async function getFavoriteRecipes(username){
     // const recipes_id = await DButils.execQuery(`SELECT recipe_id FROM FavoriteRecipes WHERE user_id='${user_id}'`);
-    const recipes_id = await DButils.execQuery("SELECT recipe_id FROM FavoriteRecipes WHERE user_id = ?", [user_id]); // prepared statement (better against SQL injections)
+    const recipes_id = await DButils.execQuery("SELECT recipe_id FROM FavoriteRecipes WHERE username = ?", [username]); // prepared statement (better against SQL injections)
     return recipes_id;
 }
 
-async function markAsViewed(user_id, recipe_id) {
+async function markAsViewed(username, recipe_id) {
     // await DButils.execQuery(`REPLACE INTO viewed_recipes (user_id, recipe_id, date) VALUES (${user_id}, ${recipe_id}, NOW())`);
-    await DButils.execQuery("REPLACE INTO viewed_recipes (user_id, recipe_id, date) VALUES (?, ?, NOW())", [user_id, recipe_id]); // prepared statement (better against SQL injections)
+    await DButils.execQuery("REPLACE INTO viewed_recipes (username, recipe_id, date) VALUES (?, ?, NOW())", [username, recipe_id]); // prepared statement (better against SQL injections)
 }
 
-async function getViewedRecipes(user_id) {
+async function getViewedRecipes(username) {
     // const viewed_recipes = await DButils.execQuery(`SELECT recipe_id FROM viewed_recipes WHERE user_id='${user_id}'`);
-    const viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM viewed_recipes WHERE user_id=?", [user_id]); // prepared statement (better against SQL injections)
+    const viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM viewed_recipes WHERE username=?", [username]); // prepared statement (better against SQL injections)
     return viewed_recipes;
 
 }
 
-async function getLastViewedRecipes(user_id, number) {
+async function getLastViewedRecipes(username, number) {
     // const last_viewed_recipes = await DButils.execQuery(`SELECT recipe_id FROM viewed_recipes WHERE user_id = ${user_id} ORDER BY date DESC LIMIT ${number}`);
-    const last_viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM viewed_recipes WHERE user_id = ? ORDER BY date DESC LIMIT ?", [user_id, number]); // prepared statement (better against SQL injections)
+    const last_viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM viewed_recipes WHERE username = ? ORDER BY date DESC LIMIT ?", [username, number]); // prepared statement (better against SQL injections)
     return last_viewed_recipes;
 }
 
 
-async function getMyRecipes(user_id, family = false) {
+async function getMyRecipes(username, family = false) {
     let query_select_my_recipes;
     if (family){
         // query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE user_id = '${user_id}') a
         //                                 LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
         //                                 WHERE b.recipes_id IS NOT NULL`;
 
-        query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE user_id = ?) a
+        query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE username = ?) a
                                             LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
                                             WHERE b.recipes_id IS NOT NULL`;
     }
     else{
         // query_select_my_recipes = `SELECT * FROM recipes WHERE user_id = '${user_id}'`;
-        query_select_my_recipes = `SELECT * FROM recipes WHERE user_id = ?`;
+        query_select_my_recipes = `SELECT * FROM recipes WHERE username = ?`;
     }
-    return recipes = await DButils.execQuery(query_select_my_recipes, [user_id]);
+    return recipes = await DButils.execQuery(query_select_my_recipes, [username]);
 }
 
 
