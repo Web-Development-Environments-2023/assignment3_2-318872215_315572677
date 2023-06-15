@@ -11,6 +11,7 @@ router.get("/", (req, res) => res.send("im here"));
  */
 router.get("/random", async (req, res, next) => {
   try {
+    // console.log(req.headers.cookie)
     const random3_recipes = await recipes_utils.getRandomThreeRecipes();
     res.send(random3_recipes);
   } catch (error) {
@@ -21,19 +22,19 @@ router.get("/random", async (req, res, next) => {
 
 router.post("/search", async (req, res, next) => {
   try {
-    const { searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance } = req.body;
-
-    // const defaultNumber = searchNumber || 5;
-    // const defaultCuisine = searchCuisine || "Italian";
-    // const defaultDiet = searchDiet || "Vegetarian";
-    // const defaultIntolerance = searchIntolerance || "Gluten";
+    let searchQuery = (req.body.query);
+    let searchNumber = (req.body.number);
+    let searchCuisine = (req.body.cuisine);
+    let searchDiet = (req.body.diet);
+    let searchIntolerance = (req.body.intolerance);
+    console.log(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance);
 
     const recipes = await recipes_utils.searchRecipes(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance);
     res.send(recipes);
   } catch (error) {
     next(error);
   }
-});
+})
 
 
 
