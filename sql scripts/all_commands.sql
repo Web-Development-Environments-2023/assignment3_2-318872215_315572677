@@ -16,34 +16,34 @@ CREATE TABLE `mydb`.`users` (
 
 
 CREATE TABLE `mydb`.`FavoriteRecipes` (
-  -- `user_id` INT NOT NULL,
-  `username` VARCHAR(50) NOT NULL,
+  `user_id` INT NOT NULL,
+  -- `username` VARCHAR(50) NOT NULL,
   `recipe_id` INT NOT NULL,
-  PRIMARY KEY (`username`, `recipe_id`),
-  CONSTRAINT `favorites_username`
-    FOREIGN KEY (`username`)
-    REFERENCES `mydb`.`users` (`username`)
+  PRIMARY KEY (`user_id`, `recipe_id`),
+  CONSTRAINT `favorites_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `mydb`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
 
   CREATE TABLE `mydb`.`viewed_recipes` (
-  -- `user_id` INT NOT NULL,
-  `username` VARCHAR(50) NOT NULL,
+  `user_id` INT NOT NULL,
+  -- `username` VARCHAR(50) NOT NULL,
   `recipe_id` INT NOT NULL,
   `date` DATETIME NOT NULL,
-  PRIMARY KEY (`username`, `recipe_id`),
-  CONSTRAINT `views_username`
-    FOREIGN KEY (`username`)
-    REFERENCES `mydb`.`users` (`username`)
+  PRIMARY KEY (`user_id`, `recipe_id`),
+  CONSTRAINT `views_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `mydb`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
 
   CREATE TABLE `mydb`.`recipes` (
   `recipes_id` INT NOT NULL AUTO_INCREMENT,
-  -- `user_id` INT NOT NULL,
-  `username` VARCHAR(50) NOT NULL,
+  `user_id` INT NOT NULL,
+  -- `username` VARCHAR(50) NOT NULL,
   `title` VARCHAR(150) NOT NULL,
   `ready_in_minutes` INT NOT NULL,
   `vegetarian` TINYINT NOT NULL,
@@ -54,9 +54,9 @@ CREATE TABLE `mydb`.`FavoriteRecipes` (
   `ingredients` JSON NOT NULL,
   `image` TEXT NULL,
   PRIMARY KEY (`recipes_id`),
-  CONSTRAINT `recipes_username`
-    FOREIGN KEY (`username`)
-    REFERENCES `mydb`.`users` (`username`)
+  CONSTRAINT `recipes_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `mydb`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 

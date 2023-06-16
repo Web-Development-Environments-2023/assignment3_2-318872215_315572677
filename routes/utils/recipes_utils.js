@@ -123,7 +123,7 @@ async function searchRecipes(searchQuery, numberSearch = 5, cuisineSearch, dietS
 }
 
 
-async function addRecipe(username, recipe) {
+async function addRecipe(user_id, recipe) {
     try {
         instructionsToJSON = JSON.stringify(recipe.instructions);
         ingredientsToJSON = JSON.stringify(recipe.ingredients);
@@ -131,10 +131,10 @@ async function addRecipe(username, recipe) {
         //         (${user_id}, '${recipe.title}', ${recipe.readyInMinutes}, ${recipe.vegetarian},${recipe.vegan}, ${recipe.glutenFree},
         //          ${recipe.servings}, '${recipe.image}', '${instructionsToJSON}', '${ingredientsToJSON}')`);
 
-        await DButils.execQuery(`INSERT INTO recipes (username, title, ready_in_minutes, vegetarian, vegan, gluten_free,
+        await DButils.execQuery(`INSERT INTO recipes (user_id, title, ready_in_minutes, vegetarian, vegan, gluten_free,
                                  servings, image, instructions, ingredients) VALUES
                                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                                [username, recipe.title, recipe.readyInMinutes, recipe.vegetarian, recipe.vegan, recipe.glutenFree,
+                                [user_id, recipe.title, recipe.readyInMinutes, recipe.vegetarian, recipe.vegan, recipe.glutenFree,
                                      recipe.servings, recipe.image, instructionsToJSON, ingredientsToJSON]);
 
 

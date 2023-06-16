@@ -8,10 +8,10 @@ const recipe_utils = require("./utils/recipes_utils");
  * Authenticate all incoming requests by middleware
  */
 router.use(async function (req, res, next) {
-  if (req.session && req.session.username) {
-    DButils.execQuery("SELECT username FROM users").then((users) => {
-      if (users.find((x) => x.username === req.session.username)) {
-        req.username = req.session.username;
+  if (req.session && req.session.user_id) {
+    DButils.execQuery("SELECT user_id FROM users").then((users) => {
+      if (users.find((x) => x.user_id === req.session.user_id)) {
+        req.user_id = req.session.user_id;
         next();
       }
     }).catch(err => next(err));
@@ -26,7 +26,7 @@ router.use(async function (req, res, next) {
  */
 router.post('/favorites', async (req,res,next) => {
   try{
-    const user_id = req.session.username;
+    const user_id = req.session.user_id;
     if (!user_id) throw {status: 401, message: "Must login to make this save"};
     const recipe_id = req.body.recipeId;
     await user_utils.markAsFavorite(user_id,recipe_id);
@@ -41,7 +41,7 @@ router.post('/favorites', async (req,res,next) => {
  */
 router.get('/favorites', async (req,res,next) => {
   try{
-    const user_id = req.session.username;
+    const user_id = req.session.user_id;
     //let favorite_recipes = {};
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     let recipes_id_array = [];
@@ -59,7 +59,7 @@ router.get('/favorites', async (req,res,next) => {
  */
 router.get('/lastWatched', async (req,res,next) => {
   try{
-    const user_id = req.session.username;
+    const user_id = req.session.user_id;
     const numberLastWatched = 3;
     const recipes_id = await user_utils.getLastViewedRecipes(user_id, numberLastWatched);
     let recipes_id_array = [];
@@ -77,7 +77,7 @@ router.get('/lastWatched', async (req,res,next) => {
  */
 router.get('/myRecipes', async (req,res,next) => {
   try{
-    const user_id = req.session.username;
+    const user_id = req.session.user_id;
     if (!user_id) {
       throw { status: 401, message: "Must login before" };
     }
@@ -95,7 +95,7 @@ router.get('/myRecipes', async (req,res,next) => {
  */
 router.get('/familyRecipes', async (req,res,next) => {
   try{
-    const user_id = req.session.username;
+    const user_id = req.session.user_id;
     if (!user_id) {
       throw { status: 401, message: "Must login before" };
     }
@@ -113,7 +113,7 @@ router.get('/familyRecipes', async (req,res,next) => {
  */
 router.post('/Like', async (req,res,next) => {
   try{
-    const user_id = req.session.username;
+    const user_id = req.session.user_id;
     if (!user_id) throw {status: 401, message: "Must login to make this save"};
     const recipe_id = req.body.recipeId;
     const recipe = await recipe_utils.getRecipeDetails(recipe_id);
