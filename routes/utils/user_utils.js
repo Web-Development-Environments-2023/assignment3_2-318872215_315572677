@@ -50,6 +50,21 @@ async function getMyRecipes(user_id, family = false) {
 }
 
 
+async function extractMyRecipes(user_id, recipe_id, family = false) {
+    let query_select_my_recipes;
+    if (family){
+        query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE user_id = ?) a
+                                    LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
+                                    WHERE b.recipes_id = ?`;
+    }
+    else{
+        query_select_my_recipes = `SELECT * FROM recipes WHERE user_id = ? AND recipes_id = ?`;
+    }
+
+    return recipes = await DButils.execQuery(query_select_my_recipes, [user_id, recipe_id]);
+}
+
+
 async function markAsLike(recipe) {
     const recipe_id = recipe.id;
   
@@ -86,3 +101,4 @@ exports.getLastViewedRecipes = getLastViewedRecipes;
 exports.getMyRecipes = getMyRecipes;
 exports.markAsLike = markAsLike;
 exports.getLikeRecipes = getLikeRecipes;
+exports.extractMyRecipes = extractMyRecipes;

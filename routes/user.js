@@ -93,7 +93,7 @@ router.get('/myRecipes', async (req,res,next) => {
 /**
  * This path returns all family recipes
  */
-router.get('/familyRecipes', async (req,res,next) => {
+router.get('/familyRecipes/', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     if (!user_id) {
@@ -126,6 +126,23 @@ router.post('/Like', async (req,res,next) => {
   }
 })
 
+/**
+ * This path returns a full details of a recipe by its id [my recipes]
+ */
+router.get('/myRecipes/:recipeId', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.params.recipeId;
+    if (!user_id) {
+      throw { status: 401, message: "Must login before" };
+    }
+    const recipes = await user_utils.extractMyRecipes(user_id, recipe_id);
+    res.status(200).send(recipes);
+  }
+  catch(error){
+    next(error);
+  }
+});
 
 
 

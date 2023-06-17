@@ -50,7 +50,7 @@ router.post("/create", async (req, res, next) => {
 
     const { title, readyInMinutes, vegetarian, vegan, glutenFree, image, servings, instructions, ingredients} = req.body;
     const defaultImage = "https://womensfitness.co.uk/wp-content/uploads/sites/3/2022/11/Shutterstock_1675475479.jpg?w=900";
-    const imageUrl = image || defaultImage;
+    const imageUrl = image || defaultImage;
     if (!title || !readyInMinutes || vegetarian === undefined || vegan === undefined || glutenFree === undefined ||
          !imageUrl || !servings || !instructions || !ingredients) {
       throw { status: 400, message: "Invalid recipe data" };
@@ -90,7 +90,7 @@ router.post('/familyRecipes', async (req,res,next) => {
 
     const { title, readyInMinutes, vegetarian, vegan, glutenFree, image, creatorBy, usualTime, servings, instructions, ingredients } = req.body;
     const defaultImage = "https://womensfitness.co.uk/wp-content/uploads/sites/3/2022/11/Shutterstock_1675475479.jpg?w=900";
-    const imageUrl = image || defaultImage;
+    const imageUrl = image || defaultImage;
     if (!title || !readyInMinutes || vegetarian === undefined || vegan === undefined || glutenFree === undefined ||
          !imageUrl || !creatorBy || !usualTime || !servings || !instructions || !ingredients) {
       throw { status: 400, message: "Invalid recipe data" };

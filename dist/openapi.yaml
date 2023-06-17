@@ -255,6 +255,34 @@ paths:
             schema:
               $ref: '#/components/schemas/Like' 
 
+  # /myRecipes/{recipeId}
+  /myRecipes/{recipeId}:
+    get:
+    tags:
+    - Recipes
+    summary: Return preview details on recipe by his ID
+    description: Return preview details on recipe by his ID
+    security:
+      - ApiKeyAuth: [] 
+    parameters:
+    - name: recipeId
+      in: path
+      description: recipe's id
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+    responses:
+      "200":
+        description: data about the recipe
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipePreview'
+      "404":
+        description: recipeId is not exists
+        $ref: '#/components/responses/NotFound'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # End of users routes
