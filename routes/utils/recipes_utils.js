@@ -114,12 +114,20 @@ async function searchRecipes(searchQuery, numberSearch = 5, cuisineSearch, dietS
             cuisine: cuisineSearch,
             diet: dietSearch,
             intolerance: intoleranceSearch,
-            fillIngredients: true,
-            addRecipeInformation: true,
+            fillIngredients: false,
+            addRecipeInformation: false,
             apiKey: process.env.spooncular_apiKey
         }
     });
-    return response.data.results;
+    return convertSearchRecipes(response.data.results);
+    // return response.data.results;
+}
+
+async function convertSearchRecipes(RecipesAarray){
+    for (let i = 0; i < RecipesAarray.length; i++) {
+        RecipesAarray[i] = await getRecipeDetails(RecipesAarray[i].id);
+    }
+    return RecipesAarray;
 }
 
 

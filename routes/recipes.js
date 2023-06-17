@@ -49,9 +49,10 @@ router.post("/create", async (req, res, next) => {
     }
 
     const { title, readyInMinutes, vegetarian, vegan, glutenFree, image, servings, instructions, ingredients} = req.body;
-
+    const defaultImage = "https://womensfitness.co.uk/wp-content/uploads/sites/3/2022/11/Shutterstock_1675475479.jpg?w=900";
+    const imageUrl = image || defaultImage;
     if (!title || !readyInMinutes || vegetarian === undefined || vegan === undefined || glutenFree === undefined ||
-         !image || !servings || !instructions || !ingredients) {
+         !imageUrl || !servings || !instructions || !ingredients) {
       throw { status: 400, message: "Invalid recipe data" };
     }
 
@@ -61,7 +62,7 @@ router.post("/create", async (req, res, next) => {
       vegetarian: vegetarian ? 1 : 0,
       vegan: vegan ? 1 : 0,
       glutenFree: glutenFree ? 1 : 0,
-      image: image,
+      image: imageUrl,
       // creatorBy,
       // usualTime,
       servings: servings,
@@ -88,9 +89,10 @@ router.post('/familyRecipes', async (req,res,next) => {
     }
 
     const { title, readyInMinutes, vegetarian, vegan, glutenFree, image, creatorBy, usualTime, servings, instructions, ingredients } = req.body;
-
+    const defaultImage = "https://womensfitness.co.uk/wp-content/uploads/sites/3/2022/11/Shutterstock_1675475479.jpg?w=900";
+    const imageUrl = image || defaultImage;
     if (!title || !readyInMinutes || vegetarian === undefined || vegan === undefined || glutenFree === undefined ||
-         !image || !creatorBy || !usualTime || !servings || !instructions || !ingredients) {
+         !imageUrl || !creatorBy || !usualTime || !servings || !instructions || !ingredients) {
       throw { status: 400, message: "Invalid recipe data" };
     }
 
@@ -100,7 +102,7 @@ router.post('/familyRecipes', async (req,res,next) => {
       vegetarian: vegetarian ? 1 : 0,
       vegan: vegan ? 1 : 0,
       glutenFree: glutenFree ? 1 : 0,
-      image: image,
+      image: imageUrl,
       creatorBy: creatorBy,
       usualTime: usualTime,
       servings: servings,
