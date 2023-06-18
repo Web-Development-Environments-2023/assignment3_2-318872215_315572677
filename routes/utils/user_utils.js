@@ -12,6 +12,11 @@ async function getFavoriteRecipes(user_id){
     return recipes_id;
 }
 
+async function checkFavoriteRecipe(user_id, recipe_id) {
+    const viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM FavoriteRecipes WHERE user_id=? AND recipe_id = ?", [user_id, recipe_id]); // prepared statement (better against SQL injections)
+    return viewed_recipes;
+}
+
 async function markAsViewed(user_id, recipe_id) {
     // await DButils.execQuery(`REPLACE INTO viewed_recipes (user_id, recipe_id, date) VALUES (${user_id}, ${recipe_id}, NOW())`);
     await DButils.execQuery("REPLACE INTO viewed_recipes (user_id, recipe_id, date) VALUES (?, ?, NOW())", [user_id, recipe_id]); // prepared statement (better against SQL injections)
@@ -22,6 +27,11 @@ async function getViewedRecipes(user_id) {
     const viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM viewed_recipes WHERE user_id=?", [user_id]); // prepared statement (better against SQL injections)
     return viewed_recipes;
 
+}
+
+async function checkViewedRecipe(user_id, recipe_id) {
+    const viewed_recipes = await DButils.execQuery("SELECT recipe_id FROM viewed_recipes WHERE user_id=? AND recipe_id = ?", [user_id, recipe_id]); // prepared statement (better against SQL injections)
+    return viewed_recipes;
 }
 
 async function getLastViewedRecipes(user_id, number) {
@@ -102,3 +112,5 @@ exports.getMyRecipes = getMyRecipes;
 exports.markAsLike = markAsLike;
 exports.getLikeRecipes = getLikeRecipes;
 exports.extractMyRecipes = extractMyRecipes;
+exports.checkViewedRecipe = checkViewedRecipe;
+exports.checkFavoriteRecipe = checkFavoriteRecipe;

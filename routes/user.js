@@ -72,6 +72,8 @@ router.get('/lastWatched', async (req,res,next) => {
   }
 });
 
+
+
 /**
  * This path returns all my recipes
  */
@@ -145,5 +147,51 @@ router.get('/myRecipes/:recipeId', async (req,res,next) => {
 });
 
 
+/**
+ * This path returns the all recipes that shown by login user
+ */
+router.get('/favorites/:recipeId', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.params.recipeId;
+    const recipe = await user_utils.checkFavoriteRecipe(user_id, recipe_id);
+    
+    console.log(recipe);
+    if (recipe.length == 0){
+      res.status(200).send(false);
+    }
+    else{
+      res.status(200).send(true);
+    }
+
+  }
+  catch(error){
+    next(error);
+  }
+});
+
+
+/**
+ * This path returns the all recipes that shown by login user
+ */
+router.get('/checkWatched/:recipeId', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.params.recipeId;
+    const recipe = await user_utils.checkViewedRecipe(user_id, recipe_id);
+    
+    console.log(recipe);
+    if (recipe.length == 0){
+      res.status(200).send(false);
+    }
+    else{
+      res.status(200).send(true);
+    }
+
+  }
+  catch(error){
+    next(error);
+  }
+});
 
 module.exports = router;

@@ -255,8 +255,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Like' 
 
-  # /myRecipes/{recipeId}
-  /myRecipes/{recipeId}:
+  # /users//myRecipes/{recipeId}
+  /users/myRecipes/{recipeId}:
     get:
     tags:
     - Recipes
@@ -284,6 +284,43 @@ paths:
         description: recipeId is not exists
         $ref: '#/components/responses/NotFound'
 
+  # /users//checkWatched/:recipeId
+  /users/checkWatched/{recipeId}:
+    get:
+      tags:
+        - Users
+      summary: Get True\False if recipe watched by login user
+      description: Return True\False for watched recipe by login user
+      responses:
+        '200':
+          description: Successfully true\false if the recipe exists
+        '400':
+          description: 'invalid input, object invalid'
+
+  # /users//checkWatched/:recipeId
+  /users/favorites/{recipeId}:
+    get:
+      tags:
+      - Users
+      summary: Return True\False favorite recipes that were saved by user
+      description: Get an True\False of recipes that were saved by a specific user
+      responses:
+        "200":
+          description: data about the user's favorites recipes returned
+          content:
+            application/json:
+              schema:
+                type: boolean
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+        "401":
+          description: user is not authorized
+      security:
+      - cookieAuth: []
+
+
+
+      
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # End of users routes
 
