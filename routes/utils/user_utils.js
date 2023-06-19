@@ -75,18 +75,18 @@ async function extractMyRecipes(user_id, recipe_id, family = false) {
 }
 
 
-async function markAsLike(recipe) {
+async function markAsLike(user_id, recipe) {
     const recipe_id = recipe.id;
   
-    var isRecipesExists = await DButils.execQuery("SELECT popularity FROM LikeRecipes WHERE recipe_id = ?", [recipe_id]);
+    var isRecipesExists = await DButils.execQuery("SELECT popularity FROM LikeRecipes WHERE user_id = ? AND recipe_id = ?", [user_id, recipe_id]);
 
     // let isRecipesExists = await getLikeRecipes(recipe_id);
     console.log(isRecipesExists);
   
     if (isRecipesExists.length === 0) {
-        const popularity = recipe.popularity;
+        const popularity = recipe.popularity || 0;
         console.log("before: "+popularity);
-        await DButils.execQuery("INSERT INTO LikeRecipes (recipe_id, popularity) VALUES (?, ?)", [recipe_id, popularity]);
+        await DButils.execQuery("INSERT INTO LikeRecipes (recipe_id, user_id, popularity) VALUES (?, ?, ?)", [recipe_id, user_id, popularity]);
     } else {
         popularity = isRecipesExists[0]["popularity"]
         popularity += 1;
@@ -95,12 +95,12 @@ async function markAsLike(recipe) {
     }
   }
   
-async function getLikeRecipes(recipe_id){
-    const [popularity] = await DButils.execQuery("SELECT popularity FROM LikeRecipes WHERE recipe_id = ?", [recipe_id]); // prepared statement (better against SQL injections)
+async function getLikeRecipes(user_id, recipe_id){
+    const popularity = await DButils.execQuery("SELECT popularity FROM LikeRecipes WHERE user_id=? AND recipe_id = ? ", [user_id, recipe_id]); // prepared statement (better against SQL injections)
     // console.log(popularity["popularity"]);
-    retPopularity = popularity["popularity"];
+    // retPopularity = popularity["popularity"];
     //console.log(retPopularity);
-    return retPopularity;
+    return popularity;
 }
 
 exports.markAsFavorite = markAsFavorite;

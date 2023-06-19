@@ -75,6 +75,7 @@ CREATE TABLE `mydb`.`family_recipe` (
 
 CREATE TABLE `mydb`.`LikeRecipes` (
   `recipe_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
   `popularity` INT NOT NULL,
   PRIMARY KEY (`recipe_id`)
 );

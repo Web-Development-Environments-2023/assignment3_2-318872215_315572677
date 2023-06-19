@@ -121,12 +121,14 @@ router.post('/Like', async (req,res,next) => {
     const recipe = await recipe_utils.getRecipeDetails(recipe_id);
     if (!recipe) throw {status: 400, message: "Recipe not found"};
     // console.log(recipe.popularity);
-    await user_utils.markAsLike(recipe);
+    await user_utils.markAsLike(user_id, recipe);
     res.status(201).send("The Recipe successfully got like :) ");
     } catch(error){
     next(error);
   }
 })
+
+
 
 /**
  * This path returns a full details of a recipe by its id [my recipes]
@@ -182,6 +184,33 @@ router.get('/checkWatched/:recipeId', async (req,res,next) => {
     
     console.log(recipe);
     if (recipe.length == 0){
+      res.status(200).send(false);
+    }
+    else{
+      res.status(200).send(true);
+    }
+
+  }
+  catch(error){
+    next(error);
+  }
+});
+
+/**
+ * This path gets body with recipeId and save the amount likes for recipe by logged-in user
+ */
+router.get('/Like/:recipeId', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.params.recipeId;
+    if (!user_id) {
+      throw { status: 401, message: "Must login before" };
+    }
+    const recipes = await user_utils.getLikeRecipes(user_id, recipe_id);
+
+    // console.log(recipes);
+    
+    if (recipes.length == 0){
       res.status(200).send(false);
     }
     else{
