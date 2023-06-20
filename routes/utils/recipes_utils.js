@@ -106,21 +106,38 @@ async function getRecipesPreview(recipes_ids_list){
 
 
 
-async function searchRecipes(searchQuery, numberSearch = 5, cuisineSearch, dietSearch, intoleranceSearch){
-    const response = await axios.get(`${api_domain}/complexSearch`,{
-        params: {
-            query: searchQuery,
-            number: numberSearch,
-            cuisine: cuisineSearch,
-            diet: dietSearch,
-            intolerance: intoleranceSearch,
-            fillIngredients: false,
-            addRecipeInformation: false,
-            apiKey: process.env.spooncular_apiKey
-        }
-    });
-    return convertSearchRecipes(response.data.results);
-    // return response.data.results;
+async function searchRecipes(searchQuery, numberSearch = 5, cuisineSearch, dietSearch, intoleranceSearch, sort){
+    if (sort){
+        const response = await axios.get(`${api_domain}/complexSearch`,{
+            params: {
+                query: searchQuery,
+                number: numberSearch,
+                cuisine: cuisineSearch,
+                diet: dietSearch,
+                intolerance: intoleranceSearch,
+                sort: sort,
+                fillIngredients: true,
+                addRecipeInformation: true,
+                apiKey: process.env.spooncular_apiKey
+            }
+        });
+        return convertSearchRecipes(response.data.results);
+    }
+    else{
+        const response = await axios.get(`${api_domain}/complexSearch`,{
+            params: {
+                query: searchQuery,
+                number: numberSearch,
+                cuisine: cuisineSearch,
+                diet: dietSearch,
+                intolerance: intoleranceSearch,
+                fillIngredients: true,
+                addRecipeInformation: true,
+                apiKey: process.env.spooncular_apiKey
+            }
+        });
+        return convertSearchRecipes(response.data.results);
+    }
 }
 
 async function convertSearchRecipes(RecipesAarray){

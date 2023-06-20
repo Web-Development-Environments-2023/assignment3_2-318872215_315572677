@@ -27,9 +27,10 @@ router.post("/search", async (req, res, next) => {
     let searchCuisine = (req.body.cuisine);
     let searchDiet = (req.body.diet);
     let searchIntolerance = (req.body.intolerance);
+    let searchSort = (req.body.sort);
     console.log(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance);
 
-    const recipes = await recipes_utils.searchRecipes(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance);
+    const recipes = await recipes_utils.searchRecipes(searchQuery, searchNumber, searchCuisine, searchDiet, searchIntolerance, searchSort);
     res.send(recipes);
   } catch (error) {
     next(error);
