@@ -43,35 +43,52 @@ async function getLastViewedRecipes(user_id, number) {
 
 async function getMyRecipes(user_id, family = false) {
     let query_select_my_recipes;
-    if (family){
-        // query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE user_id = '${user_id}') a
-        //                                 LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
-        //                                 WHERE b.recipes_id IS NOT NULL`;
+    let query_params = [user_id]; // Initialize the query parameters with the user_id
 
-        query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE user_id = ?) a
-                                            LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
-                                            WHERE b.recipes_id IS NOT NULL`;
+    if (family) {
+        query_select_my_recipes = `
+            SELECT *, ? AS isFamily
+            FROM (SELECT * FROM recipes WHERE user_id = ?) a
+            LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
+            WHERE b.recipes_id IS NOT NULL
+        `;
+        query_params.unshift(true); // Prepend `true` to the query_params array
+    } else {
+        query_select_my_recipes = `
+            SELECT *, ? AS isFamily
+            FROM recipes
+            WHERE user_id = ?
+        `;
+        query_params.unshift(false); // Prepend `false` to the query_params array
     }
-    else{
-        // query_select_my_recipes = `SELECT * FROM recipes WHERE user_id = '${user_id}'`;
-        query_select_my_recipes = `SELECT * FROM recipes WHERE user_id = ?`;
-    }
-    return recipes = await DButils.execQuery(query_select_my_recipes, [user_id]);
+
+    return recipes = await DButils.execQuery(query_select_my_recipes, query_params);
 }
+
 
 
 async function extractMyRecipes(user_id, recipe_id, family = false) {
     let query_select_my_recipes;
-    if (family){
-        query_select_my_recipes = `SELECT * FROM (SELECT * FROM recipes WHERE user_id = ?) a
-                                    LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
-                                    WHERE b.recipes_id = ?`;
-    }
-    else{
-        query_select_my_recipes = `SELECT * FROM recipes WHERE user_id = ? AND recipes_id = ?`;
+    let query_params = [user_id, recipe_id]; // Initialize the query parameters with user_id and recipe_id
+
+    if (family) {
+        query_select_my_recipes = `
+            SELECT *, ? AS isFamily 
+            FROM (SELECT * FROM recipes WHERE user_id = ?) a
+            LEFT JOIN family_recipe b ON a.recipes_id = b.recipes_id
+            WHERE b.recipes_id = ?
+        `;
+        query_params.unshift(true); // Prepend `true` to the query_params array
+    } else {
+        query_select_my_recipes = `
+            SELECT *, ? AS isFamily 
+            FROM recipes 
+            WHERE user_id = ? AND recipes_id = ?
+        `;
+        query_params.unshift(false); // Prepend `false` to the query_params array
     }
 
-    return recipes = await DButils.execQuery(query_select_my_recipes, [user_id, recipe_id]);
+    return recipes = await DButils.execQuery(query_select_my_recipes, query_params);
 }
 
 

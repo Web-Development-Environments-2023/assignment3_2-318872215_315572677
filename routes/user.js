@@ -133,20 +133,30 @@ router.post('/Like', async (req,res,next) => {
 /**
  * This path returns a full details of a recipe by its id [my recipes]
  */
-router.get('/myRecipes/:recipeId', async (req,res,next) => {
-  try{
+router.get('/myRecipes/:recipeId', async (req, res, next) => {
+  try {
     const user_id = req.session.user_id;
     const recipe_id = req.params.recipeId;
+    const recipeFamily = parseInt(req.query.recipeFamily);
+
+    // if (recipeFamily == '0')
+    //   recipeFamily = false;
+    // else if (recipeFamily === '1')
+    //   recipeFamily = true;
+    // else
+    //   recipeFamily = undefined;
+
     if (!user_id) {
       throw { status: 401, message: "Must login before" };
     }
-    const recipes = await user_utils.extractMyRecipes(user_id, recipe_id);
+
+    const recipes = await user_utils.extractMyRecipes(user_id, recipe_id, recipeFamily);
     res.status(200).send(recipes);
-  }
-  catch(error){
+  } catch (error) {
     next(error);
   }
 });
+
 
 
 /**
